@@ -28,12 +28,14 @@ else:
     print(f"Trobats {len(articles)} articles")
 
 for article in articles:
-    titol_tag = article.find("h2") or article.find("h3") or article.find("a")
+    titol_tag = article.find("h2") or article.find("h3")
+    subtitol_tag = article.find("p") or article.find("h4") or article.find("span")
     link_tag = article.find("a", href=True)
 
     if titol_tag and link_tag:
         titol = titol_tag.get_text(strip=True)
         link = link_tag["href"]
+        subtitol = subtitol_tag.get_text(strip=True) if subtitol_tag else ""
 
         if link.startswith("/"):
             link = "https://www.nuvol.com" + link
@@ -41,7 +43,7 @@ for article in articles:
         fe = fg.add_entry()
         fe.title(titol)
         fe.link(href=link)
-        fe.description(titol)
+        fe.description(subtitol if subtitol else titol)
         print(f"  -> {titol[:60]}...")
 
 fg.rss_file("nuvol.rss")
