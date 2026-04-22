@@ -40,20 +40,33 @@ for article in articles:
             link = "https://www.nuvol.com" + link
 
         subtitol = ""
+        imatge = ""
         try:
             resposta_article = scraper.get(link)
             sopa_article = BeautifulSoup(resposta_article.text, "html.parser")
+
             subtitol_tag = sopa_article.find("p", class_="subtitle")
             if subtitol_tag:
                 subtitol = subtitol_tag.get_text(strip=True)
+
+            og_image = sopa_article.find("meta", property="og:image")
+            if og_image:
+                imatge = og_image.get("content", "")
+
             time.sleep(1)
         except Exception:
             pass
+
+        if imatge:
+            contingut = f'<img src="{imatge}" /><p>{subtitol}</p>'
+        else:
+            contingut = f'<p>{subtitol}</p>' if subtitol else f'<p>{titol}</p>'
 
         fe = fg.add_entry()
         fe.title(titol)
         fe.link(href=link)
         fe.description(subtitol if subtitol else titol)
+        fe.content(contingut, type="html")
         print(f"  -> {titol[:60]}...")
 
 fg.rss_file("nuvol.rss")
