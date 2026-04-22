@@ -25,11 +25,12 @@ jobs:
       - name: Executar script
         run: python feed_nuvol.py
 
-
       - name: Pujar feed
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
+          git stash
           git pull --rebase
+          git stash pop
           git add nuvol.rss
           git diff --cached --quiet || git commit -m "Feed actualitzat" && git push
